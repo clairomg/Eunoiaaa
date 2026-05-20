@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eunoia | Discover Your Reader Soul</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;1,400&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pastel-pink: #F8C8DC;
+            --soft-purple: #D7BDE2;
+            --crisp-white: #FFFFFF;
+            --warm-peach: #FFE4E1;
+            --accent-dark: #5D4037;
+            --text-gray: #444444;
+            --light-bg: #FAF6F0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--crisp-white);
+            color: var(--text-gray);
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--accent-dark); }
+        h4 { font-family: 'Lora', serif; color: var(--accent-dark); }
+
+        /* Whimsical Animations */
+        .whimsy {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            user-select: none;
+            opacity: 0.5;
+            animation: float 12s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            33% { transform: translateY(-40px) translateX(30px) rotate(10deg); }
+            66% { transform: translateY(30px) translateX(-20px) rotate(-10deg); }
+        }
+
+        /* Screens Structure */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .screen.active { display: flex; }
+        
+        /* Dashboard Layout is constrained, clean, and elegant */
+        .dashboard-screen {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .dashboard-screen.active { display: block; }
+
+        .hero-title { 
+            font-size: 8rem; 
+            margin: 0 0 20px 0; 
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: var(--accent-dark);
+            text-shadow: 4px 4px 0px var(--warm-peach);
+        }
+
+        .hero-desc { 
+            max-width: 700px; 
+            font-size: 1.4rem; 
+            line-height: 1.6; 
+            margin-bottom: 50px; 
+            font-family: 'Lora', serif;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px;
+            border-radius: 40px;
+            border: 2px solid var(--soft-purple);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input[type="text"] {
+            padding: 20px;
+            width: 100%;
+            border-radius: 30px;
+            border: 2px solid var(--soft-purple);
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            outline: none;
+            text-align: center;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /* Nav Tabs Styles */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--warm-peach);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 2px solid transparent;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--accent-dark);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .tab-btn:hover {
+            background: var(--warm-peach);
+        }
+
+        .tab-btn.active {
+            background: var(--soft-purple);
+            color: white;
+            box-shadow: 0 5px 12px rgba(215, 189, 226, 0.4);
+        }
+
+        /* Panel layouts */
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+        
+        .tab-panel.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .welcome-header h2 { font-size: 3rem; margin: 10px 0; }
+
+        /* Grid layout for Types & Book Displays */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1max));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .cards-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .info-card {
+            background: #FFFBF7;
+            padding: 25px;
+            border-radius: 25px;
+            border: 1px solid var(--warm-peach);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease;
+        }
+        .info-card:hover { transform: translateY(-5px); }
+        .info-card h4 { font-size: 1.3rem; margin: 0 0 10px 0; color: #704214; }
+        .info-card p { font-size: 0.95rem; line-height: 1.5; margin: 0; color: #555; }
+
+        /* Book Categories Styles */
+        .book-section-title {
+            font-size: 2rem;
+            margin: 40px 0 20px 0;
+            padding-left: 10px;
+            border-left: 5px solid var(--soft-purple);
+        }
+
+        .book-card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            border-left: 6px solid var(--soft-purple);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+        .book-meta { font-family: 'Lora', serif; font-style: italic; color: #7f8c8d; margin-bottom: 10px; }
+
+        /* Quiz Layout inside Dashboard */
+        .quiz-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .quiz-card {
+            background: white;
+            padding: 50px;
+            border-radius: 40px;
+            border: 4px solid var(--warm-peach);
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #f0f0f0;
+            height: 12px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--soft-purple);
+            width: 0%;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 6px;
+        }
+
+        /* Buttons Styling */
+        .btn {
+            background: var(--soft-purple);
+            border: none;
+            padding: 22px 60px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Open Sans', sans-serif;
+            box-shadow: 0 8px 15px rgba(215, 189, 226, 0.4);
+            margin: 10px;
+        }
+
+        .btn:hover { 
+            transform: translateY(-5px) scale(1.05); 
+            background: #c39bd3; 
+        }
+
+        .btn-no { background: var(--pastel-pink); color: #444; box-shadow: 0 8px 15px rgba(248, 200, 220, 0.4); }
+
+        /* Dynamic Diagnostic Results Container */
+        .result-box {
+            max-width: 850px;
+            background: var(--warm-peach);
+            padding: 50px;
+            border-radius: 40px;
+            text-align: left;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        .result-title { font-size: 2.8rem; margin-bottom: 25px; border-bottom: 2px dashed var(--soft-purple); padding-bottom: 15px; }
+
+        .book-suggestion {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border-left: 8px solid var(--soft-purple);
+        }
+
+        .book-suggestion-title { font-weight: 700; color: var(--accent-dark); font-size: 1.3rem; }
+
+        /* About Page Narrative Elements */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+            font-family: 'Lora', serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+        }
+        .about-content p { margin-bottom: 25px; text-align: justify; }
+
+        .credits {
+            text-align: center;
+            margin-top: 40px;
+            font-family: 'Lora', serif;
+            font-style: italic;
+            color: var(--accent-dark);
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 4rem; }
+            .btn { padding: 18px 40px; font-size: 1.2rem; }
+            .welcome-header h2 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Whimsical Icons -->
+    <div class="whimsy" style="font-size: 50px; top: 5%; left: 5%;">🌿</div>
+    <div class="whimsy" style="font-size: 40px; bottom: 10%; right: 5%; animation-delay: 1s;">🍃</div>
+    <div class="whimsy" style="font-size: 60px; top: 15%; right: 10%; animation-delay: 2s;">📖</div>
+    <div class="whimsy" style="font-size: 45px; bottom: 20%; left: 8%; animation-delay: 4s;">📚</div>
+    <div class="whimsy" style="font-size: 40px; top: 50%; left: 3%; animation-delay: 3s;">🪶</div>
+    <div class="whimsy" style="font-size: 25px; top: 25%; left: 20%; color: gold;">✨</div>
+    <div class="whimsy" style="font-size: 30px; top: 70%; left: 40%; color: gold; animation-delay: 6s;">✨</div>
+
+    <!-- Screen 1: Landing (Preserved) -->
+    <section id="screen-landing" class="screen active">
+        <h1 class="hero-title">Eunoia</h1>
+        <p class="hero-desc">Every reader carries a hidden world within. Through 50 thoughtful questions, let us map the landscape of your literary soul.</p>
+        <button class="btn" onclick="showScreen('screen-login')">Enter</button>
+    </section>
+
+    <!-- Screen 2: Login Page (With Title Casing Modification Built-in) -->
+    <section id="screen-login" class="screen">
+        <div class="login-box">
+            <h3>Who are we exploring today?</h3>
+            <input type="text" id="nickname" placeholder="Your Nickname">
+            <button class="btn" onclick="initializeDashboard()">Start</button>
+        </div>
+    </section>
+
+    <!-- Screen 3: The Main Dashboard Interface Container -->
+    <main id="screen-dashboard" class="dashboard-screen">
+        
+        <!-- Interactive Navigation Tabs Section -->
+        <nav class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('panel-menu', this)">Main Menu</button>
+            <button class="tab-btn" onclick="switchTab('panel-books', this)">Books</button>
+            <button class="tab-btn" onclick="switchTab('panel-test', this)">Test</button>
+            <button class="tab-btn" onclick="switchTab('panel-about', this)">About</button>
+        </nav>
+
+        <!-- TAB 1: MAIN MENU (User Header + 20 Reader Profile Cards) -->
+        <section id="panel-menu" class="tab-panel active">
+            <div class="welcome-header">
+                <h1 style="font-size: 4rem; margin:0;">Eunoia</h1>
+                <h2>Welcome, <span id="user-display-name" style="color: var(--soft-purple);">Reader</span>!</h2>
+                <p style="font-family:'Lora', serif; font-size:1.2rem;">Explore the twenty distinct archetypes that structure our reading worlds.</p>
+            </div>
+            
+            <div id="types-directory" class="cards-grid">
+                <!-- Injected dynamically by JavaScript -->
+            </div>
+        </section>
+
+        <!-- TAB 2: BOOKS (Curated Popular Masterpieces) -->
+        <section id="panel-books" class="tab-panel">
+            <div class="welcome-header">
+                <h2>The Library Collection</h2>
+                <p style="font-family:'Lora', serif;">A curated compendium of landmark literary works from distinct heritages.</p>
+            </div>
+
+            <!-- Category: Old English Literature -->
+            <h3 class="book-section-title">Old English Classics</h3>
+            <div class="book-card">
+                <div class="book-meta"><strong>Beowulf</strong> — Anonymous</div>
+                <p>An epic Anglo-Saxon heroic poem tracking the legendary geatish warrior Beowulf as he fights the monster Grendel, Grendel's vengeful mother, and a devastating fire-breathing dragon.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>The Canterbury Tales</strong> — Geoffrey Chaucer</div>
+                <p>A vibrant collection of stories told by a diverse group of pilgrims traveling together to Canterbury Cathedral, serving as an unmatched, witty study of medieval society and human nature.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>Sir Gawain and the Green Knight</strong> — Anonymous</div>
+                <p>A classic chivalric romance tracking King Arthur's noble nephew, Sir Gawain, on an unsettling quest to fulfill a deadly pact made with a mysterious, immortal green warrior.</p>
+            </div>
+
+            <!-- Category: Western Masterpieces -->
+            <h3 class="book-section-title">Western Literature &amp; Pop-Culture</h3>
+            <div class="book-card">
+                <div class="book-meta"><strong>The Great Gatsby</strong> — F. Scott Fitzgerald</div>
+                <p>Set during the glamorous Roaring Twenties, this landmark novel critiques the elusive American Dream through the obsessive, tragic love affair of a self-made millionaire named Jay Gatsby.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>Pride and Prejudice</strong> — Jane Austen</div>
+                <p>A dazzling romantic comedy of manners that highlights the turbulent relationship between the brilliant Elizabeth Bennet and the wealthy, proud aristocratic landowner Mr. Darcy.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>1984</strong> — George Orwell</div>
+                <p>A chilling dystopian masterpiece exploring total governmental oversight, psychological manipulation, and the tragic erasure of historical truth under an all-seeing dictator known as Big Brother.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>Harry Potter and the Goblet of Fire</strong> — J.K. Rowling</div>
+                <p>The pivotal fourth year at Hogwarts School of Witchcraft and Wizardry, where Harry is unexpectedly bound to face dangerous tasks in the iconic, magical Triwizard Tournament.</p>
+            </div>
+
+            <!-- Category: Filipino Literature & Comics -->
+            <h3 class="book-section-title">Filipino Literary Treasures</h3>
+            <div class="book-card">
+                <div class="book-meta"><strong>Noli Me Tángere</strong> — Dr. José Rizal</div>
+                <p>The foundational socio-political novel of the Philippines exposing the rampant corruption, inequalities, and deep systemic abuses under Spanish colonial clerical rule, sparking a cultural revolution.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>El Filibusterismo</strong> — Dr. José Rizal</div>
+                <p>The dark, suspenseful sequel to Noli Me Tángere, capturing a radical, bitter return via an alias to plot an underground revolution to overthrow oppressive structures.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>Dekada '70</strong> — Lualhati Bautista</div>
+                <p>A poignant family drama showing a middle-class Manila family navigating the complex socio-political landscape, state restrictions, and personal transformations under Martial Law in the 1970s.</p>
+            </div>
+            <div class="book-card">
+                <div class="book-meta"><strong>Trese</strong> — Budjette Tan &amp; Kajo Baldisimo</div>
+                <p>A highly acclaimed, dark graphic novel series following detective Alexandra Trese as she solves gruesome criminal cases involving mythological creatures of underworld Filipino folklore hiding in modern Manila.</p>
+            </div>
+        </section>
+
+        <!-- TAB 3: TEST (50-Question Diagnostic Workspace) -->
+        <section id="panel-test" class="tab-panel">
+            <div id="test-intro-box" class="welcome-header">
+                <h2>The Reader Soul Quiz</h2>
+                <p style="font-family:'Lora', serif; max-width: 600px; margin: 15px auto;">Prepare yourself to navigate our diagnostic instrument. Answer the fifty questions directly to uncover your definitive reader identity profile.</p>
+                <button class="btn" onclick="startQuizFlow()">Begin Assessment</button>
+            </div>
+
+            <!-- Dynamic Quiz Play Area Container -->
+            <div id="quiz-workspace" class="quiz-wrapper" style="display: none;">
+                <div class="quiz-card">
+                    <div class="progress-container"><div id="progress" class="progress-bar"></div></div>
+                    <p id="q-count" style="font-weight: 600; color: var(--soft-purple);">Question 1 of 50</p>
+                    <h2 id="question-text" style="min-height: 120px; font-size: 1.8rem;">Loading question text...</h2>
+                    <div>
+                        <button class="btn" onclick="handleAnswer(true)">Yes</button>
+                        <button class="btn btn-no" onclick="handleAnswer(false)">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostics Results Dashboard Placement -->
+            <div id="quiz-results-display" style="display: none;">
+                <div class="result-box">
+                    <h2 id="result-name" class="result-title"></h2>
+                    <div id="result-content" style="font-size: 1.15rem; line-height: 1.6; font-family: 'Lora', serif; margin-bottom: 25px;"></div>
+                    <hr style="border: 1px dashed var(--soft-purple); margin: 30px 0;">
+                    <div id="book-recommendations"></div>
+                    
+                    <div style="text-align: center; margin-top: 40px;">
+                        <button class="btn" onclick="resetQuizFlow()">Retake Test</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ABOUT THE SITE -->
+        <section id="panel-about" class="tab-panel">
+            <div class="welcome-header">
+                <h2>About Eunoia</h2>
+            </div>
+            <div class="about-content">
+                <p><strong>Eunoia</strong> comes from a Greek word meaning “beautiful thinking” or “a well mind.” It represents positive, meaningful thoughts and a deep sense of understanding. This meaning connects to our website because Eunoia helps readers discover books that match their personalities, interests, and reading preferences, encouraging a more enjoyable and meaningful reading experience.</p>
+                
+                <p>Eunoia is a website designed for readers who want to identify the types of books that best suit their interests and preferences. Many readers struggle to choose books that truly match their tastes, often leading to loss of interest in reading. To address this, the website provides a personalized and engaging way to help users discover books they are more likely to enjoy.</p>
+                
+                <p>The website features 50 carefully designed yes-or-no questions that assess the user’s reading habits, interests, personality, and preferences. These questions aim to understand what kind of stories, themes, writing styles, and genres the user is naturally drawn to. After completing the questionnaire, the system will tally the responses and determine the user’s reader type based on their answers.</p>
+                
+                <p>Once the user’s reader type is identified, Eunoia will generate personalized book recommendations tailored to their preferences. For example, users who enjoy mystery and suspense may be recommended thriller or detective novels, while those who prefer emotional and character-driven stories may receive romance or contemporary fiction suggestions. This personalized approach makes book selection easier, more enjoyable, and better suited to each reader’s unique interests.</p>
+                
+                <p>Through Eunoia, readers are guided toward books that align with their preferences, helping them develop a deeper appreciation for reading while making the process of finding suitable books more convenient and enjoyable.</p>
+            </div>
+        </section>
+
+        <!-- Universal App Structural Footer Inside Dashboard Layout -->
+        <footer class="credits">
+            Made by Larrhea and Claifrey
+        </footer>
+    </main>
+
+    <script>
+        // Core Repository holding the structural 50 questions
+        const questions = [
+            "Do you read almost every day?", "Do you enjoy reading in your free time?", "Do you finish books quickly?",
+            "Do you often reread your favorite books?", "Do you prefer short readings over long books?", "Do you usually read before sleeping?",
+            "Do you enjoy reading more than watching movies?", "Do you read even when it is not required?", "Do you usually carry something to read?",
+            "Do you prefer reading alone in a quiet place?", "Do you prefer fiction over nonfiction?", "Do you enjoy mystery or suspense stories?",
+            "Do you like romance stories?", "Do you enjoy fantasy or magical worlds?", "Do you prefer informative texts over stories?",
+            "Do you enjoy reading academic or research materials?", "Do you prefer comics or graphic novels?", "Do you enjoy biographies or life stories?",
+            "Do you like reading poems?", "Do you prefer short articles instead of books?", "Do you sometimes skip parts of a text to get to the main point?",
+            "Do you read quickly?", "Do you pause to think deeply about what you read?", "Do you highlight or take notes while reading?",
+            "Do you search unfamiliar words while reading?", "Do you read instructions carefully before doing something?", "Do you prefer reading summaries before the full text?",
+            "Do you imagine scenes vividly while reading?", "Do you reread confusing parts to understand better?", "Do you question whether the author’s ideas are valid?",
+            "Do you prefer physical books over digital reading?", "Do you often read on your phone or tablet?", "Do you enjoy audiobooks?",
+            "Do visuals or pictures help you understand texts better?", "Do you like interactive reading apps?", "Do you read mostly for entertainment?",
+            "Do you read mainly for school or work?", "Do you read to learn new things?", "Do you read to relax or reduce stress?",
+            "Do you enjoy discussing books with others?", "Do you remember details from what you read?", "Do you connect stories to your personal life?",
+            "Do you often predict what will happen next in a story?", "Do you feel emotionally attached to characters?", "Do you compare books to movies or real-life situations?",
+            "Do you prefer reading one book at a time?", "Do you stop reading books you find boring?", "Do you enjoy recommending books to others?",
+            "Do you usually understand the main idea after one reading?", "Do you like exploring deeper meanings or hidden messages in texts?"
+        ];
+
+        // Core Matrix Definition mapping all 20 distinct reader profiles
+        const types = [
+            { id: 1, name: "Slow Reader", desc: "You tend to take more time to read and understand texts carefully. Instead of rushing, you focus on understanding details and making sure you fully comprehend the material.", keys: [22, 28], books: [{ t: "Beowulf — Anonymous", d: "This epic suits you because its Old English roots and dense poetic structure require deliberate reading. It rewards patience as you slowly uncover themes of heroism." }, { t: "Kafka on the Shore — Haruki Murakami", d: "Its surreal storytelling and shifting perspectives demand thoughtful reading. As a slow reader, you appreciate its emotional depth without feeling rushed." }] },
+            { id: 2, name: "Visual Reader", desc: "You understand information better when texts include pictures, diagrams, or illustrations. You find it easier to remember info when it's presented visually.", keys: [16, 33], books: [{ t: "The Song of Roland — Anonymous", d: "Filled with vivid battle scenes and dramatic imagery that are easy to picture in your mind, building 'movie-like' scenes." }, { t: "Demon Slayer — Koyoharu Gotouge", d: "Detailed artwork and dynamic action panels enhance your understanding, processing information better through images than text alone." }] },
+            { id: 3, name: "Auditory Reader", desc: "You learn and understand information better by hearing it. You may prefer audiobooks or hearing discussions because spoken words help you remember details.", keys: [32, 39], books: [{ t: "The Canterbury Tales — Geoffrey Chaucer", d: "Designed for spoken storytelling. The rhythm and dialogue help you absorb meaning through sound patterns." }, { t: "Your Lie in April — Naoshi Arakawa", d: "Relies on emotional dialogue and musical themes. You connect deeply with the tone and implied sound of the narrative." }] },
+            { id: 4, name: "Digital Reader", desc: "You prefer reading on devices such as phones or tablets. You enjoy the convenience of accessing materials online and using interactive tools.", keys: [31, 34], books: [{ t: "Sir Gawain and the Green Knight — Anonymous", d: "Digital versions with annotations help you navigate complex Middle English language easily using digital tools." }, { t: "Solo Leveling — Chugong", d: "Designed for scrolling formats. The pacing matches how you prefer to read—quickly, conveniently, and interactively." }] },
+            { id: 5, name: "Traditional Reader", desc: "You prefer printed materials such as books or magazines. You find physical books more comfortable and easier to focus on because they reduce distractions.", keys: [30, 8], books: [{ t: "Beowulf — Anonymous", d: "Best experienced in printed form where you can focus deeply without digital distractions, allowing you to appreciate the poetic structure." }, { t: "Pride and Prejudice — Jane Austen", d: "Refined language and subtle humor are best appreciated through physical copies, engaging more deeply with romantic tension." }] },
+            { id: 6, name: "Speed Reader", desc: "You can read quickly and understand the main ideas in a short amount of time, moving rapidly through texts to save time.", keys: [2, 21], books: [{ t: "The Iliad — Homer", d: "Structured episodes and action-driven narrative allow you to quickly grasp major events like battles even at high speed." }, { t: "One Punch Man — ONE", d: "Fast-paced battles and straightforward humor are easy to process quickly while moving through chapters rapidly." }] },
+            { id: 7, name: "Skimming Reader", desc: "You tend to read quickly to understand the general idea without paying attention to every detail, focusing on headings and keywords.", keys: [20, 26, 48], books: [{ t: "The Anglo-Saxon Chronicle — Anonymous", d: "Structured in short entries. You can scan for dates and rulers without needing to read every single word." }, { t: "The Great Gatsby — F. Scott Fitzgerald", d: "Central themes can be understood even focusing only on key scenes, capturing the message without analyzing every detail." }] },
+            { id: 8, name: "Scanning Reader", desc: "You search for specific information rather than reading an entire text. You look for names, dates, or definitions quickly.", keys: [24, 25], books: [{ t: "The Epic of Gilgamesh — Anonymous", d: "Clear divisions make it easy to search for specific themes like friendship or adventure without line-by-line reading." }, { t: "Sapiens — Yuval Noah Harari", d: "Organized into defined concepts. You can locate specific info about evolution or society without sequential reading." }] },
+            { id: 9, name: "Reflective Reader", desc: "You connect what you read to your personal experiences, emotions, or beliefs, thinking deeply about how stories relate to real life.", keys: [22, 41, 44], books: [{ t: "The Divine Comedy — Dante Alighieri", d: "Encourages deep thinking about morality and life choices. You connect the journey to your own self-understanding." }, { t: "A Silent Voice — Yoshitoki Ōima", d: "Deals with redemption and growth. You connect strongly with the emotional struggles, relating them to your own life." }] },
+            { id: 10, name: "Critical Reader", desc: "You carefully examine and question what you read, evaluating whether the author’s ideas are reliable or logical.", keys: [29, 23], books: [{ t: "Paradise Lost — John Milton", d: "Presents complex arguments about good and evil. You naturally analyze if the narrative challenges your moral beliefs." }, { t: "1984 — George Orwell", d: "Challenges your thinking about authority. You evaluate the political messages and question the system presented." }] },
+            { id: 11, name: "Analytical Reader", desc: "You enjoy breaking down texts to understand their structure and themes. You examine how events connect rather than reading passively.", keys: [49, 15], books: [{ t: "Beowulf — Anonymous", d: "Has a clear structure of battles and symbolic layers you can dissect to see how loyalty and leadership are built." }, { t: "Frankenstein — Mary Shelley", d: "Complex themes and multiple narrative layers. You break down Victor's decisions to understand cause and moral consequence." }] },
+            { id: 12, name: "Literal Reader", desc: "You focus mainly on the direct meaning of words. You understand facts well without needing to explore symbolism.", keys: [25, 48], books: [{ t: "The Exeter Book Riddles — Anonymous", d: "Can be understood through direct interpretation. You stick closely to what is explicitly stated in the clues." }, { t: "Doraemon — Fujiko F. Fujio", d: "Simple, direct storytelling. You understand events as they happen without needing to hunt for hidden meanings." }] },
+            { id: 13, name: "Interpretive Reader", desc: "You look for hidden meanings and symbols. You enjoy analyzing what each symbol represents beyond the surface story.", keys: [49, 13], books: [{ t: "Sir Gawain and the Green Knight — Anonymous", d: "Filled with moral lessons. You go beyond the knight's challenge to explore themes like temptation and weakness." }, { t: "Death Note — Tsugumi Ohba", d: "Explores deep psychological and moral questions about justice, power, and morality." }] },
+            { id: 14, name: "Avid Reader", desc: "You genuinely enjoy reading and do it frequently. It is an important part of your daily routine.", keys: [0, 1, 7], books: [{ t: "The Canterbury Tales — Geoffrey Chaucer", d: "Contains multiple diverse stories. Your love for reading allows you to enjoy its variety over long sessions." }, { t: "Harry Potter and the Goblet of Fire — J.K. Rowling", d: "Detailed world and complex development. You enjoy immersive stories that you can stay engaged with for long periods." }] },
+            { id: 15, name: "Casual Reader", desc: "You read only occasionally, mainly for enjoyment. You enjoy stories that are entertaining but not mentally demanding.", keys: [35, 47], books: [{ t: "The Ballad of Robin Hood — Anonymous", d: "Episodic and easy to follow. You can enjoy the story in short bursts without needing to analyze the text deeply." }, { t: "Spy x Family — Tatsuya Endo", d: "Light and humorous. You enjoy the fun character interactions without the pressure of a demanding plot." }] },
+            { id: 16, name: "Selective Reader", desc: "You prefer reading only materials that match your interests or favorite genres, ignoring subjects that don't appeal to you.", keys: [46, 19], books: [{ t: "Le Morte d’Arthur — Thomas Malory", d: "Focuses on Arthurian legends. You choose it because it matches your preference for legendary stories." }, { t: "Jujutsu Kaisen — Gege Akutami", d: "Delivers intense battles and complex power systems that match your specific preference for dark fantasy." }] },
+            { id: 17, name: "Research Reader", desc: "You read mainly to gather information or evidence for studies. You carefully examine details for informational purposes.", keys: [36, 15, 14], books: [{ t: "The Anglo-Saxon Chronicle — Anonymous", d: "Provides factual accounts of rulers and battles, used as a reliable source of historical data." }, { t: "Guns, Germs, and Steel — Jared Diamond", d: "Presents structured research explaining human development, focusing on evidence and theories." }] },
+            { id: 18, name: "Recreational Reader", desc: "You read mainly for entertainment and relaxation. You enjoy stories that help you escape and improve creativity.", keys: [38, 10, 12], books: [{ t: "The Merry Adventures of Robin Hood — Howard Pyle", d: "Entertaining and adventurous. You read it for fun, following stories of heroism in a light way." }, { t: "One Piece — Eiichiro Oda", d: "Offers long-term adventure and humor. It provides an imaginative escape that keeps you entertained." }] },
+            { id: 19, name: "Reluctant Reader", desc: "You usually read only when necessary, such as for school or work. You may not enjoy reading much.", keys: [36, 4], books: [{ t: "Beowulf (Heaney Translation)", d: "Simplifies the original text while keeping the main story, making the heroic tale less intimidating for you." }, { t: "Pokémon Adventures — Hidenori Kusaka", d: "Uses familiar visuals and simple storytelling to keep you interested without feeling overwhelmed." }] },
+            { id: 20, name: "Comprehension Reader", desc: "Your main goal is to fully understand and remember what you read, ensuring strong and complete interpretation.", keys: [40, 28], books: [{ t: "The Epic of Gilgamesh — Anonymous", d: "Requires careful reading to understand themes of mortality. You focus on understanding every part deeply." }, { t: "To Kill a Mockingbird — Harper Lee", d: "You aim to understand both the surface story and the deeper social messages about justice and empathy." }] }
+        ];
+
+        let currentIdx = 0;
+        let userNickname = "";
+        let answers = [];
+
+        // Global Setup initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTypesToMainMenu();
+        });
+
+        // Basic linear layout switcher
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.dashboard-screen').forEach(s => s.classList.remove('active'));
+            
+            const element = document.getElementById(id);
+            if(element) element.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // Functional Tab Navigation Switcher
+        function switchTab(panelId, clickTarget) {
+            // Unset current active state on tab selectors
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            // Hide all tab display nodes
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            // Set current targeting nodes
+            clickTarget.classList.add('active');
+            document.getElementById(panelId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // Programmatic Helper: Converts generic strings to Title Case capitalization
+        function toTitleCase(str) {
+            if (!str) return "";
+            return str.toLowerCase().split(' ').map(word => {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join(' ');
+        }
+
+        // Dynamic Main Menu Generation Engine
+        function renderTypesToMainMenu() {
+            const container = document.getElementById('types-directory');
+            let generatedHTML = "";
+            
+            types.forEach(item => {
+                generatedHTML += `
+                    <div class="info-card">
+                        <h4>${item.id}. ${item.name}</h4>
+                        <p>${item.desc}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML = generatedHTML;
+        }
+
+        // Handle entry login state conversion
+        function initializeDashboard() {
+            const rawNick = document.getElementById('nickname').value.trim();
+            if(!rawNick) { 
+                alert("Please enter a valid nickname to continue your exploration."); 
+                return; 
+            }
+            
+            // Format input to appropriate Title Case format
+            userNickname = toTitleCase(rawNick);
+            
+            // Apply variables into view displays
+            document.getElementById('user-display-name').innerText = userNickname;
+            
+            // Move transition to main menu panel framework
+            showScreen('screen-dashboard');
+        }
+
+        // Grammatical configuration handler
+        function getArticle(word) {
+            return ['A', 'E', 'I', 'O', 'U'].includes(word[0].toUpperCase()) ? "an" : "a";
+        }
+
+        /* Diagnostic Flow Methods */
+        function startQuizFlow() {
+            // Hide intro display framework, reset matrices index counters
+            document.getElementById('test-intro-box').style.display = 'none';
+            document.getElementById('quiz-results-display').style.display = 'none';
+            
+            currentIdx = 0;
+            answers = [];
+            
+            document.getElementById('quiz-workspace').style.display = 'flex';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if(currentIdx < questions.length) {
+                document.getElementById('question-text').innerText = questions[currentIdx];
+                document.getElementById('q-count').innerText = `Question ${currentIdx + 1} of 50`;
+                document.getElementById('progress').style.width = `${((currentIdx) / 50) * 100}%`;
+            } else {
+                calculateResult();
+            }
+        }
+
+        function handleAnswer(val) {
+            answers.push(val);
+            currentIdx++;
+            loadQuestion();
+        }
+
+        function calculateResult() {
+            document.getElementById('quiz-workspace').style.display = 'none';
+            
+            let scores = types.map(t => ({...t, total: 0}));
+            answers.forEach((ans, idx) => {
+                if(ans) {
+                    scores.forEach(type => { if(type.keys.includes(idx)) type.total++; });
+                }
+            });
+
+            scores.sort((a, b) => b.total - a.total);
+            const winner = scores[0];
+            const article = getArticle(winner.name);
+
+            document.getElementById('quiz-results-display').style.display = 'block';
+            document.getElementById('result-name').innerText = `${userNickname}, your result is: ${article} ${winner.name}!`;
+            document.getElementById('result-content').innerText = winner.desc;
+
+            let bookHTML = `<h3 style="font-size:1.8rem; margin-top:0;">Tailored Suggestions for You:</h3>`;
+            winner.books.forEach((book, i) => {
+                bookHTML += `
+                    <div class="book-suggestion">
+                        <div class="book-suggestion-title">${i+1}. ${book.t}</div>
+                        <p style="margin: 10px 0 0 0; line-height: 1.5; font-family:'Open Sans', sans-serif; font-size:0.95rem;">${book.d}</p>
+                    </div>
+                `;
+            });
+            document.getElementById('book-recommendations').innerHTML = bookHTML;
+        }
+
+        function resetQuizFlow() {
+            document.getElementById('quiz-results-display').style.display = 'none';
+            document.getElementById('test-intro-box').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
